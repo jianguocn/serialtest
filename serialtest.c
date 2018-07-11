@@ -61,6 +61,7 @@ static void *recv_thread(void *param)
 {
 	int fd;
 	int ret;
+	int i;
 
 	fd = *(int *)param;
 	if (fd <= 0)
@@ -70,7 +71,16 @@ static void *recv_thread(void *param)
 		ret = read(fd, recv_buff, RECV_BUFF_SIZE);
 		if (ret > 0) {
 			recv_buff[ret] = 0;
-			printf("%s", recv_buff);
+			printf("%s\nDUMP:\n", recv_buff);
+			for (i = 0; i < ret; i ++) {
+				if (i % 16 == 0)
+					printf("%08X:", i);
+				printf(" %02X", recv_buff[i] & 0xFF);
+				if ((i + 1) % 16 == 0)
+					printf("\n");
+			}
+			if (ret % 16)
+				printf("\n");
 		}
 
 		usleep(interval);
@@ -139,6 +149,45 @@ int main(int argc,char **argv)
 		if (!strcmp(send_buff, "quit")) {
 			terminated = 1;
 			break;
+		} else if (!strcmp(send_buff, "spiwrite")) {
+			char *p = send_buff;
+			int i;
+			memcpy(p, "AT%SPI=", 7);
+			p += 7;
+			*p++ = 0; //write;
+			*(unsigned short *)p = 0;
+			p += 2;
+			*(unsigned short *)p = 256;
+			p += 2;
+			for (i = 0; i < 256; i++)
+				*p++ = i;
+			write(fd, send_buff, p - send_buff);
+			continue;
+		} else if (!strcmp(send_buff, "spiwrite2")) {
+			char *p = send_buff;
+			int i;
+			memcpy(p, "AT%SPI=", 7);
+			p += 7;
+			*p++ = 0; //write;
+			*(unsigned short *)p = 0;
+			p += 2;
+			*(unsigned short *)p = 256;
+			p += 2;
+			for (i = 0; i < 256; i++)
+				*p++ = 255 - i;
+			write(fd, send_buff, p - send_buff);
+			continue;
+		} else if (!strcmp(send_buff, "spiread")) {
+			char *p = send_buff;
+			memcpy(p, "AT%SPI=", 7);
+			p += 7;
+			*p++ = 1; //read;
+			*(unsigned short *)p = 0;
+			p += 2;
+			*(unsigned short *)p = 256;
+			p += 2;
+			write(fd, send_buff, p - send_buff);
+			continue;
 		}
 
 		write(fd, send_buff, strlen(send_buff));
