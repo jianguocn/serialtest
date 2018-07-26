@@ -4,11 +4,5 @@ all: serialtest
 
 .PHONY : all
 
-serialtest: serialtest.o
-	$(CC) --static -pthread -o $@ $<
-
-clean:
-	rm -f *.o
-
-install: all
-	sudo cp ./serialtest /usr/bin/
+serialtest:
+	sudo $(CC) --static -pthread -o /usr/bin/serialtest serialtest.c crc16.c
