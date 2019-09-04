@@ -182,26 +182,26 @@ int main(int argc,char **argv)
 
 	while ((ch = getopt(argc,argv,"b:d:i:oph"))!= -1) {
 		switch (ch) {
-			case 'd':
-				dev = optarg;
-				break;
-			case 'b':
-				baud_rate = atoi(optarg);
-				break;
-			case 'i':
-				interval = atoi(optarg);
-				break;
-			case 'o':
-				dump_on = 1;
-				break;
-			case 'p':
-				show_prompt = 1;
-				break;
-			case 'h':
-				usage(argv[0]);
-				return 0;
-			default:
-				break;
+		case 'd':
+			dev = optarg;
+			break;
+		case 'b':
+			baud_rate = atoi(optarg);
+			break;
+		case 'i':
+			interval = atoi(optarg);
+			break;
+		case 'o':
+			dump_on = 1;
+			break;
+		case 'p':
+			show_prompt = 1;
+			break;
+		case 'h':
+			usage(argv[0]);
+			return 0;
+		default:
+			break;
 		}
 	}
 
